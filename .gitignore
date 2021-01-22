@@ -1,0 +1,20 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+.DS_Store
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+cmd/fireplace-server/database
+cmd/fireplace-server/fireplace-server
+cmd/fireplace-viewer/node_modules
+cmd/fireplace-viewer/fireplace-viewer
+.vs
+cmd/sharpfireplace/bin
+cmd/sharpfireplace/obj

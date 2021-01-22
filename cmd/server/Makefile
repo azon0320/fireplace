@@ -11,17 +11,17 @@ dir:
 amd64: 
 	GOOS=linux GOARCH=amd64 go build -o bin/fireplace-server main.go
 
-# build arm64
-.PHONY:arm64
-arm64: 
-	GOOS=linux GOARCH=arm64 go build -o bin/fireplace-server main.go
+# build arm
+.PHONY:arm
+arm: 
+	GOOS=linux GOARCH=arm go build -o bin/fireplace-server main.go
 
 # build amd64 docker
 .PHONY:amd64-docker
 amd64-docker: amd64
-	docker build -t ${DOCKER_TAG} -f ./Dockerfile .
+	docker build -t ${DOCKER_TAG} -f ./Dockerfile . && rm -rf ./bin/*
 
-# build arm64 docker
-.PHONY:arm64-docker
-arm64-docker: arm64
-	docker build -t ${DOCKER_TAG} -f ./Dockerfile .
+# build arm docker
+.PHONY:arm-docker
+arm-docker: arm
+	docker build -t ${DOCKER_TAG} -f ./Dockerfile . && rm -rf ./bin/*

@@ -13,16 +13,23 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// FireplaceHookConfig Fireplace logging hook config
 type FireplaceHookConfig struct {
-	Application  string
+	// Application name
+	Application string
+	// Fireplace Server URL
 	FireplaceURL string
+	// before log fn, return if should log
+	BeforeLog func(entry *logrus.Entry) bool
 }
 
+// FireplaceHook The hook which should be injected by logrus.New().AddHook()
 type FireplaceHook struct {
 	client *http.Client
 	config *FireplaceHookConfig
 }
 
+// NewFireplaceHook new fireplace hook object
 func NewFireplaceHook(config *FireplaceHookConfig) *FireplaceHook {
 	return &FireplaceHook{
 		client: &http.Client{Timeout: time.Second * 2},
@@ -30,8 +37,16 @@ func NewFireplaceHook(config *FireplaceHookConfig) *FireplaceHook {
 	}
 }
 
+// Fire implemented from logrus.Hook
 func (h *FireplaceHook) Fire(entry *logrus.Entry) error {
 	var err error
+
+	if h.config.BeforeLog != nil {
+		canSend := h.config.BeforeLog(entry)
+		if !canSend {
+			return nil
+		}
+	}
 
 	data := &logentry.CreateLogEntryRequest{
 		Application: h.config.Application,
@@ -63,6 +78,7 @@ func (h *FireplaceHook) Fire(entry *logrus.Entry) error {
 	return nil
 }
 
+// Levels implemented from logrus.Hook
 func (h *FireplaceHook) Levels() []logrus.Level {
 	return []logrus.Level{
 		logrus.PanicLevel,
@@ -74,6 +90,7 @@ func (h *FireplaceHook) Levels() []logrus.Level {
 	}
 }
 
+// send Send log data to fireplace server
 func (h *FireplaceHook) send(entry *logentry.CreateLogEntryRequest) error {
 	var err error
 	var entryJSON []byte
